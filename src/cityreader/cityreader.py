@@ -1,6 +1,14 @@
 # Create a class to hold a city location. Call the class "City". It should have
 # fields for name, lat and lon (representing latitude and longitude).
 
+class City:
+  def __init__(self, name, lat, lon):
+    self.name = name
+    self.lat = float(lat)
+    self.lon = float(lon)
+
+  def __str__(self):
+    return f'{self.name}, {self.lat}, {self.lon}'
 
 # We have a collection of US cities with population over 750,000 stored in the
 # file "cities.csv". (CSV stands for "comma-separated values".)
@@ -20,7 +28,11 @@ def cityreader(cities=[]):
   # TODO Implement the functionality to read from the 'cities.csv' file
   # For each city record, create a new City instance and add it to the 
   # `cities` list
-    
+    import csv
+    with open('cities.csv', newline='') as cities_csv:
+        next(cities_csv)
+        for row in csv.reader(cities_csv, delimiter=','):
+          cities.append(City(row[0], row[3], row[4]))
     return cities
 
 cityreader(cities)
@@ -62,10 +74,35 @@ for c in cities:
 
 def cityreader_stretch(lat1, lon1, lat2, lon2, cities=[]):
   # within will hold the cities that fall within the specified region
-  within = []
 
   # TODO Ensure that the lat and lon valuse are all floats
   # Go through each city and check to see if it falls within 
   # the specified coordinates.
+  
+  # initialise variables used to normalise the data passed in arguments
+  l_lat = 0
+  s_lat = 0
+  l_lon = 0
+  s_lon = 0
+
+# to normalise the data, check which latitude is larger and set to l_lat - then set the other to s_lat
+  if float(lat1) > float(lat2):
+    l_lat = float(lat1)
+    s_lat = float(lat2)
+  else:
+    l_lat = float(lat2)
+    s_lat = float(lat1)
+  
+  # to normalise the data, check which longitude is larger and set to l_lon - then set the other to s_lon
+  if float(lon1) > float(lon2):
+    l_lon = float(lon1)
+    s_lon = float(lon2)
+  else:
+    l_lon = float(lon2)
+    s_lon = float(lon1)
+
+  # add instance of City class for a city to 'within' if (the latitude of the city is between l_lat and s_lat) AND (the longitude of the city is between l_lon and s_lon)
+  # went with a list comprehension for this as did some reading and apparently it's more performant than a for loop - only concern is that is might be a bit less readable?
+  within = [City(c.name, c.lat, c.lon) for c in cities if s_lat <= c.lat <= l_lat and s_lon <= c.lon <= l_lon]
 
   return within
